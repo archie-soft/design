@@ -1,0 +1,21 @@
+{
+    "name": "Design Documents",
+    "image": "mcr.microsoft.com/devcontainers/java:21-bookworm",
+    "features": {
+        "ghcr.io/devcontainers/features/common-utils:1": {
+            "configureZshAsDefaultShell": true,
+            "upgradePackages": true
+        }
+    },
+    "customizations": {
+        "vscode": {
+            "settings": {
+                "workbench.colorTheme": "Default Dark+"
+            },
+            "extensions": [
+                "jebbs.plantuml"
+            ]
+        }
+    },
+  "postCreateCommand": "sudo apt-get update && sudo apt-get install -y graphviz"
+}
