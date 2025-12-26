@@ -1,0 +1,13 @@
+@startuml components
+
+class docs {
+    id
+    format
+    accessRights
+    get()
+    put()
+    patch()
+    delete()
+}
+
+@enduml

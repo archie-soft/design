@@ -1,5 +1,0 @@
-@startuml test
-
-Alice --> Bob
-
-@enduml
