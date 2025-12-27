@@ -1,6 +1,6 @@
 # Archie Design Documents
 
-Archie is a web-based digital archive application designed to preserve the history of small communities. It manages **Digital Assets** (files) and **Catalog Metadata** (Solr documents), providing a unified interface for physical and digital artifacts.
+Archie is a web-based digital archive application designed to preserve the history of small communities. It manages **Digital Assets** (files) and **Catalog Metadata** (Apache Solr documents), providing a unified interface for physical and digital artifacts.
 
 ---
 
