@@ -1,65 +1,51 @@
 # Archie Design Documents
 
-## REST Services
+Archie is a web-based digital archive application designed to preserve the history of small communities. It manages **Digital Assets** (files) and **Catalog Metadata** (Solr documents), providing a unified interface for physical and digital artifacts.
+
+---
+
+## Architectural Principles (RESTful Mindset)
+Archie treats every entity as a **Resource**. 
+* **Actions** (like extracting text or backing up) are modeled as **State Transitions** or **Sub-resources**.
+* **Internal Services** act as specialized workers for specific resource components (Thumbnails, Content).
+
+---
+
+## Service Catalog
+
+### External Services (Public-Facing API)
+
+| Resource | Description | RESTful Mapping |
+| :--- | :--- | :--- |
+| **Documents** (`/docs`) | The primary unit of the archive. Represents the union of metadata and the physical/digital asset. | `POST` triggers the ingestion pipeline (validation, extraction, thumbnailing). |
+| **Folders** (`/folders`) | Represents "Staging Areas" for batch imports. | `GET` lists ready-to-import batches; `DELETE` purges a staging area. |
+| **Drafts** (`/drafts`) | Unprocessed items from external channels (e.g., email). | `POST` creates a draft; `DELETE` discards it; Successful drafts are promoted to `/docs`. |
+| **Backups** (`/backups`) | Snapshot resources of the archive stored in AWS S3. | `POST` creates a new backup instance; `GET` retrieves backup history and status. |
+| **Reports** (`/reports`) | Analytical views of system operations (Ingestion logs, Backup integrity). | `GET` retrieves system health and audit trails. |
+
+### Internal Services (Resource Components)
+
+These services are consumed by the External API to enrich the Document resource.
+
+* **Files (`/files`)**: Manages the persistence layer in S3. Resources are segmented by access level: `public`, `private`, or `secret`.
+* **Thumbnails (`/thumbnails`)**: Manages low-resolution visual proxies. `PUT` creates or refreshes the thumbnail resource for a specific asset.
+* **Content (`/content`)**: Manages extracted intelligence (OCR text, audio transcripts). `PUT` triggers a new extraction/transcription job.
+* **Faces (`/faces`)**: Manages biometric metadata identified within visual assets.
+
+---
+
+## Code Repositories Naming Conventions
+
+We use a flat organizational structure in GitHub with strict naming conventions to simulate architectural grouping:
+
+* **`*-gui`**: Use facing webapps (e.g., `admin-gui`).
+* **`*-service`**: Implementation of a RESTful endpoint (e.g., `docs-service`).
+* **`*-lib`**: Shared logic and utilities (e.g., `image-manipulation-lib`).
+* **`infrastructure`**: Infrastructure as Code (Terraform/CDK) and deployment logic.
+* **`design`**: Documentation, diagrams, and architectural decision records (ADRs).
+
+---
+
+## System Diagram
 
 ![services diagram](diagrams/services.png)
-
-### External
-
-- Docs
-  - Documents are the main building blocks of the applicaton. Each one combines an Apache Solr document and the file or artifact it describes.
-  - Methods
-    - Get: Returns all information about a document and usually also the path to the file it desribes.
-    - Put: Creates a new document, after validating the file and performing other operations on it, such as extracting text and generating a thumbnail.
-    - Patch: Updates a document and optionally to the file it describes.
-    - Delete: Deletes both the document and its files.
-- Folders: 
-    - This service is used in batch import jobs. It present the user a list of pre-existing folders with files that can be sent to the Docs service.
-    - Methods
-      - Get
-      - Delete
-- Reports
-    - This service displays information about the results of put docs and backup services. It is also consumed by those services when creating the reports.
-    - Methods
-      - Put
-      - Get
-- Drafts
-  - This service allows the user to view items received automatically from external chanels, like mail, and then deside if he wants to import it to the system (by sending it to the put docs service).
-  - Methods
-    - Put
-    - Get
-    - Delete
-- Backups
-  - This service is triggered by a scheduler. It copies documents and files to a dedicated AWS S3 bucket.
-  - Methods
-    - Put: performs a backup by calling the Docs and Files services
-
-### Internal
-
-- Files
-  - Files (assets) are stored in AWS S3 buckets, according to its access-rights: public, private, secret.
-  - Methods
-    - Get: Reads a file from an S3 bucket, by concatenating access-rights, id and format from the associated document.
-    - Put: Uploads a file to S3 bucket.
-    - Patch: Performs various operatons on the file, after it already imported to the system, like: re-generating thumbnail, re-extracting text or converting video file to another format.
-    - Delete: Deletes the main asset file from an S3 bucket, together with its related files (content, thumbnail, etc).
-- Thumbnails
-  - This service generates a small low-resolution image from the main asset file (image, video and pdf files are currently supported).
-  - Methods
-    - Put
-    - Delete
-- Content
-  - This service extracts or recognize text from a PDF file, or transcript an audio or video file.
-  - Methods
-    - Put
-- Faces
-  - This is a face recognition service
-  - Methods
-    - Put
-    - Get
-
-## Code repositories naming conventions
-
-  - xxx-service for REST endpoints (example: docs-service)
-  - xxx-lib for common logic that can be used by the services (example: image-manipulaton-lib)
-  - free text for special stuff (example: design, infrastructure)
