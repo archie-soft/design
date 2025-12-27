@@ -10,8 +10,7 @@ interface Doc {
     format
     accessRights
     get()
-    put()
-    patch()
+    post()
     delete()
 }
 
@@ -19,6 +18,24 @@ interface Folder {
     name
     get()
     delete()
+}
+
+interface Draft {
+    get()
+    post()
+    delete()
+}
+
+interface Report {
+    folderName
+    get()
+    put()
+}
+
+interface Backup {
+    date
+    get()
+    post()
 }
 
 class File {
@@ -45,26 +62,9 @@ class Content {
     delete()
 }
 
-interface Report {
-    folderName
-    get()
-    put()
-}
-
-interface Draft {
-    get()
-    put()
-    delete()
-}
 
 class Face {
     file
-    get()
-    put()
-}
-
-interface Backup {
-    date
     get()
     put()
 }
