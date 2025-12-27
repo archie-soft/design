@@ -38,7 +38,7 @@ These services are consumed by the External API to enrich the Document resource.
 
 We use a flat organizational structure in GitHub with strict naming conventions to simulate architectural grouping:
 
-* **`*-gui`**: Use facing webapps (e.g., `admin-gui`).
+* **`*-gui`**: User facing webapps (e.g., `admin-gui`).
 * **`*-service`**: Implementation of a RESTful endpoint (e.g., `docs-service`).
 * **`*-lib`**: Shared logic and utilities (e.g., `image-manipulation-lib`).
 * **`infrastructure`**: Infrastructure as Code (Terraform/CDK) and deployment logic.
