@@ -1,0 +1,19 @@
+@startuml put_docs
+participant Docs
+participant Files
+participant Thumbnails
+participant Content
+participant Reports
+Docs --> Files: store
+Docs --> Thumbnails: generate
+Docs --> Content: extract, recognize or transcribe
+Docs --> Report: create
+@enduml
+
+@startuml patch_docs
+participant Docs
+participant Files
+participant Faces
+Docs --> Files: convert
+Docs --> Faces: recognize
+@enduml

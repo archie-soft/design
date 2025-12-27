@@ -1,4 +1,4 @@
-@startuml components
+@startuml services
 
 allowmixing
 
