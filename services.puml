@@ -1,0 +1,87 @@
+@startuml components
+
+allowmixing
+
+actor User
+actor Scheduler
+
+interface Doc {
+    id
+    format
+    accessRights
+    get()
+    put()
+    patch()
+    delete()
+}
+
+interface Folder {
+    name
+    get()
+    delete()
+}
+
+class File {
+    id
+    format
+    path
+    get()
+    put()
+    patch()
+    delete()
+}
+
+class Thumbnail {
+    file
+    get()
+    put()
+    delete()
+}
+
+class Content {
+    file
+    get()
+    put()
+    delete()
+}
+
+interface Report {
+    folderName
+    get()
+    put()
+}
+
+interface Draft {
+    get()
+    put()
+    delete()
+}
+
+class Face {
+    file
+    get()
+    put()
+}
+
+interface Backup {
+    date
+    get()
+    put()
+}
+
+Scheduler --> Backup
+User --> Doc
+User --> Folder
+User --> Report
+User --> Draft
+
+Doc --> File
+Doc -- Content
+Doc -- Thumbnail
+Doc -- Face
+Doc --> Report
+Backup --> Doc
+Backup --> File
+Backup --> Report
+
+@enduml
