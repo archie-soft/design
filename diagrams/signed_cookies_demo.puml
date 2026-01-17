@@ -1,0 +1,52 @@
+@startuml signed_cookies_demo
+skinparam componentStyle uml2
+skinparam backgroundColor #FFFFFF
+skinparam packageStyle rectangle
+
+title Architecture: Secure S3 Access via Cognito & CloudFront
+
+actor "User Browser" as user
+
+package "Identity Management" {
+    component [Cognito User Pool] as cup
+    component [Cognito Identity Pool] as cip
+    component [IAM Authenticated Role] as iam
+}
+
+package "Content Delivery (CloudFront)" {
+    component [CloudFront Distribution] as cf
+    component [Lambda@Edge\n(Security Guard)] as lambda
+    component [Origin Access Control (OAC)] as oac
+}
+
+package "Storage" {
+    database "Private S3 Bucket" as s3
+}
+
+' Interaction Flow
+user -down-> cup : 1. Sign-in / Authenticate
+cup .right.> user : JWT Token
+
+user -down-> cip : 2. Exchange JWT
+cip -down-> iam : Assume Role
+iam .up.> user : Temporary Credentials
+
+user -down-> cf : 3. Request URL\n(Standard Browser Link)
+
+cf -left-> lambda : 4. Check for\nSession/Cookies
+lambda -up-> user : 5. Redirect to Login\n(If Unauthorized)
+
+cf -down-> oac : 6. Sign Request to S3
+oac -down-> s3 : 7. Fetch Object
+
+note right of lambda
+  Logic: If !Cookie
+  then Redirect to Cognito
+end note
+
+note right of s3
+  Bucket Policy:
+  Allow only OAC Principal
+end note
+
+@enduml
