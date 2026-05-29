@@ -1,7 +1,7 @@
 import requests
 import json
 
-API_ENDPOINT = "http://localhost:5000/api"
+API_ENDPOINT = "http://127.0.0.1:5000/api"
 
 
 def create_doc(title, content):
